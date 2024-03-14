@@ -48,6 +48,7 @@ public class AccountDAO {
 
     public Account loginUser(Account user) {
         Connection connection = ConnectionUtil.getConnection();
+        System.out.println("This is the user: " + user);
         try {
             String sql = "select * from account where username = ? and password = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -58,7 +59,8 @@ public class AccountDAO {
             ResultSet rs = preparedStatement.executeQuery();
             
             if (rs.next()) {
-                return new Account(user.getUsername(), user.getPassword());
+                int accountId = rs.getInt("account_id");
+                return new Account(accountId, user.getUsername(), user.getPassword());
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());

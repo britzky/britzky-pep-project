@@ -14,7 +14,7 @@ public class AccountService {
         if (accountDAO.usernameExists(user.getUsername())){
             System.out.println("Username is taken please try again.");
         }
-        if (user.getUsername() != null && user.getPassword().length() >= 4){
+        if (user.getUsername() != null && user.getPassword().length() >= 4 && user.getUsername().length() > 0){
             return accountDAO.addUser(user);
         } 
         return null;
