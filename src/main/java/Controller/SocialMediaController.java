@@ -9,8 +9,9 @@ import Model.Message;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import DAO.AccountDAO;
 import Service.AccountService;
+import Service.MessageService;
+import java.util.List;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller. The endpoints you will need can be
@@ -19,9 +20,11 @@ import Service.AccountService;
  */
 public class SocialMediaController {
     AccountService accountService;
+    MessageService messageService;
 
     public SocialMediaController(){
         this.accountService = new AccountService();
+        this.messageService = new MessageService();
     }
     /**
      * In order for the test cases to work, you will need to write the endpoints in the startAPI() method, as the test
@@ -33,6 +36,7 @@ public class SocialMediaController {
         app.post("/register", this::registrationHandler);
         app.post("/login", this::loginHandler);
         app.post("/messages", this::messagesHandler);
+        app.get("/messages", this::allMessagesHandler);
         app.start(8080);
 
         return app;
@@ -64,7 +68,23 @@ public class SocialMediaController {
 
     private void messagesHandler(Context context) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        
+        Message message = mapper.readValue(context.body(), Message.class);
+        Message addedMessage = messageService.addMessage(message);
+        if (addedMessage!=null){
+            context.json(mapper.writeValueAsString(addedMessage));
+        } else {
+            context.status(400);
+        }
+    }
+
+    private void allMessagesHandler(Context context) {
+        List<Message> messages = messageService.getAllMessages();
+        context.json(messages);
+
+    }
+
+    private void messageByIdHandler(Context context) {
+        Message retrievedMessage = messageService.getMessageById(message.getMessage_id());
     }
 
 
