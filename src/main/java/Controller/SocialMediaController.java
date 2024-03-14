@@ -89,17 +89,23 @@ public class SocialMediaController {
         Message message = new Message(messageId, 0, "", 0L);
         
         Message retrievedMessage = messageService.getMessageById(message.getMessage_id());
-        
-        context.json(retrievedMessage);
+        if (retrievedMessage != null){
+            context.json(retrievedMessage);
+        } else {
+            context.json("");
+        }
     }
     
     private void deleteMessageHandler(Context context) {
         String messageIdString = context.pathParam("message_id");
         int messageId = Integer.parseInt(messageIdString);
-        
-        Message message = new Message(messageId, 0, "", 0L);
-        
-        messageService.deleteMessage(message);
+
+        Message deletedMessage = messageService.deleteMessage(messageId);
+        if (deletedMessage != null){
+            context.json(deletedMessage);
+        } else {
+            context.json("");
+        }
     }
     
     private void updateMessageHandler(Context context) throws JsonProcessingException {
@@ -111,6 +117,10 @@ public class SocialMediaController {
         Message partialMessage = mapper.readValue(context.body(), Message.class);
         
         Message existingMessage = messageService.getMessageById(messageId);
+        if (existingMessage == null) {
+            context.status(400);
+            return;
+        }
         
         Message newMessage = new Message(messageId, existingMessage.getPosted_by(), partialMessage.getMessage_text(), existingMessage.getTime_posted_epoch());
         

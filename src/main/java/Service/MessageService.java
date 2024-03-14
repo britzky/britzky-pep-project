@@ -15,7 +15,7 @@ public class MessageService {
 
     public Message addMessage(Message message) {
         System.out.println("Received message " + message);
-        if (message != null && message.getMessage_text().length() <= 255 && messageDAO.userExists(message.getPosted_by())) {
+        if (message != null && message.getMessage_text().length() <= 255 && message.getMessage_text().length() > 0 && messageDAO.userExists(message.getPosted_by())) {
             System.out.println("Conditions met, adding message to the database.");
             return messageDAO.addMessage(message);
         }
@@ -28,12 +28,16 @@ public class MessageService {
         return messageDAO.getMessageById(messageId);
     }
     
-    public boolean deleteMessage(Message message) {
-        return messageDAO.deleteMessage(message);
+    public Message deleteMessage(int messageId) {
+        return messageDAO.deleteMessage(messageId);
     }
     
     public Message updateMessageText(Message message) {
-        if (message != null && message.getMessage_text().length() <= 255){
+        Message existingMessage = messageDAO.getMessageById(message.getMessage_id());
+        if (existingMessage == null) {
+            return null;
+        }
+        if (message != null && message.getMessage_text().length() <= 255 && message.getMessage_text().length() > 0){
             boolean isUpdated = messageDAO.updateMessage(message);
             if (isUpdated){
                 return messageDAO.getMessageById(message.getMessage_id());

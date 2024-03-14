@@ -69,19 +69,19 @@ public class MessageDAO {
         return null;
     }
     
-    public boolean deleteMessage(Message message) {
+    public Message deleteMessage(int messageId) {
         Connection connection = ConnectionUtil.getConnection();
         try {
+            Message messageToDelete = getMessageById(messageId);
             String sql = "delete from message where message_id = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             
-            preparedStatement.setInt(1, message.getMessage_id());
-            int rowsAffected = preparedStatement.executeUpdate();
-            return rowsAffected > 0; 
+            preparedStatement.setInt(1, messageId);
+            return messageToDelete;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return false;
         }
+        return null;
     }
     
     public boolean updateMessage(Message message) {
@@ -122,13 +122,13 @@ public class MessageDAO {
         Connection connection = ConnectionUtil.getConnection();
         List<Message> messages = new ArrayList<>();
         try {
-            String sql = "select * from message where account_id = ?";
+            String sql = "select * from message where posted_by = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
             preparedStatement.setInt(1, accountId);
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                Message message = new Message(rs.getInt("messagee_id"), rs.getInt("posted_by"), rs.getString("message_text"), rs.getLong("time_posted_epoch"));
+                Message message = new Message(rs.getInt("message_id"), rs.getInt("posted_by"), rs.getString("message_text"), rs.getLong("time_posted_epoch"));
                 messages.add(message);
             }
         } catch (SQLException e) {
